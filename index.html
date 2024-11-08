@@ -5,37 +5,93 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Barcode Generator</title>
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.6.0/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  <style>
+    body {
+      background-color: #1a1a1a;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    #barcodeContainer {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 20px;
+      width: 100%;
+      max-width: 1200px;
+    }
+    canvas {
+      background-color: #333;
+      padding: 10px;
+      border-radius: 8px;
+    }
+    button {
+      background-color: #444;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      margin: 10px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    button:hover {
+      background-color: #555;
+    }
+  </style>
 </head>
 <body>
-  <h1>Barcodes from A1801854B to A1802000B</h1>
   <div id="barcodeContainer"></div>
+  <button onclick="generateMoreBarcodes()">Generate 100 More</button>
+  <button onclick="downloadBarcodesAsZip()">Download All as ZIP</button>
 
   <script>
-    function generateBarcodes() {
+    let currentBarcode = 1801864;
+
+    // Initial barcode generation
+    function generateBarcodes(start, end) {
       const container = document.getElementById('barcodeContainer');
-      for (let i = 1801854; i <= 1802000; i++) {
-        // Create barcode value with the format A<number>B
+      for (let i = start; i <= end; i++) {
         const barcodeValue = `A${i}B`;
-        
-        // Create canvas for each barcode
         const canvas = document.createElement('canvas');
-        
-        // Generate barcode on the canvas
         JsBarcode(canvas, barcodeValue, {
           format: "CODE128",
-          lineColor: "#000",
+          lineColor: "#fff",
           width: 2,
           height: 50,
           displayValue: true
         });
-        
-        // Append canvas to container
         container.appendChild(canvas);
       }
     }
 
-    // Call the function to generate barcodes on page load
-    window.onload = generateBarcodes;
+    // Generate more barcodes in increments of 100
+    function generateMoreBarcodes() {
+      generateBarcodes(currentBarcode + 1, currentBarcode + 100);
+      currentBarcode += 100;
+    }
+
+    // Download all barcodes as ZIP
+    async function downloadBarcodesAsZip() {
+      const zip = new JSZip();
+      const container = document.getElementById('barcodeContainer');
+      const canvases = container.querySelectorAll('canvas');
+      let count = 1;
+      for (const canvas of canvases) {
+        const dataURL = canvas.toDataURL("image/png");
+        const data = dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+        zip.file(`barcode_${count}.png`, data, { base64: true });
+        count++;
+      }
+      const content = await zip.generateAsync({ type: "blob" });
+      saveAs(content, "barcodes.zip");
+    }
+
+    // Initial load from A1801855B to A1801864B
+    window.onload = () => generateBarcodes(1801855, 1801864);
   </script>
 </body>
 </html>

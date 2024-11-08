@@ -51,20 +51,27 @@
   <script>
     let currentBarcode = 1801864;
 
-    // Initial barcode generation
+    // Function to generate barcodes
     function generateBarcodes(start, end) {
       const container = document.getElementById('barcodeContainer');
       for (let i = start; i <= end; i++) {
         const barcodeValue = `A${i}B`;
         const canvas = document.createElement('canvas');
-        JsBarcode(canvas, barcodeValue, {
-          format: "CODE128",
-          lineColor: "#fff",
-          width: 2,
-          height: 50,
-          displayValue: true
-        });
-        container.appendChild(canvas);
+
+        // Try generating the barcode and check for success
+        try {
+          JsBarcode(canvas, barcodeValue, {
+            format: "CODE128",
+            lineColor: "#fff",
+            background: "#333",
+            width: 2,
+            height: 50,
+            displayValue: true
+          });
+          container.appendChild(canvas);
+        } catch (error) {
+          console.error(`Failed to generate barcode for ${barcodeValue}:`, error);
+        }
       }
     }
 

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Barcode Generator</title>
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
+</head>
+<body>
+  <h1>Barcodes from A1801854B to A1802000B</h1>
+  <div id="barcodeContainer"></div>
+
+  <script>
+    function generateBarcodes() {
+      const container = document.getElementById('barcodeContainer');
+      for (let i = 1801854; i <= 1802000; i++) {
+        // Create barcode value with the format A<number>B
+        const barcodeValue = `A${i}B`;
+        
+        // Create canvas for each barcode
+        const canvas = document.createElement('canvas');
+        
+        // Generate barcode on the canvas
+        JsBarcode(canvas, barcodeValue, {
+          format: "CODE128",
+          lineColor: "#000",
+          width: 2,
+          height: 50,
+          displayValue: true
+        });
+        
+        // Append canvas to container
+        container.appendChild(canvas);
+      }
+    }
+
+    // Call the function to generate barcodes on page load
+    window.onload = generateBarcodes;
+  </script>
+</body>
+</html>
